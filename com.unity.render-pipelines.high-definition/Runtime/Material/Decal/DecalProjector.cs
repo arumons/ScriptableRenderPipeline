@@ -30,6 +30,8 @@ namespace UnityEngine.Rendering.HighDefinition
                 OnValidate();
             }
         }
+        [SerializeField]
+        private int m_Layer = -1;
 
         [SerializeField]
         private float m_DrawDistance = 1000.0f;
@@ -279,7 +281,19 @@ namespace UnityEngine.Rendering.HighDefinition
             }
         }
 
-        void LateUpdate()
+#if UNITY_EDITOR
+        void Update() // only run in editor
+        {
+            if(m_Layer != gameObject.layer)
+            {
+                Matrix4x4 sizeOffset = Matrix4x4.Translate(decalOffset) * Matrix4x4.Scale(decalSize);
+                DecalSystem.instance.UpdateCachedData(position, rotation, sizeOffset, m_DrawDistance, m_FadeScale, uvScaleBias, m_AffectsTransparency, m_Handle, gameObject.layer, m_FadeFactor);
+                m_Layer = gameObject.layer;
+            }
+        }
+#endif
+
+            void LateUpdate()
         {
             if (m_Handle != null)
             {
