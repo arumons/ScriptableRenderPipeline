@@ -246,6 +246,18 @@ half3 MixFog(real3 fragColor, real fogFactor)
 
 #endif
 
+inline float2 UnityStereoScreenSpaceUVAdjustInternal(float2 uv, float4 scaleAndOffset)
+{
+    return uv.xy * scaleAndOffset.xy + scaleAndOffset.zw;
+}
+
+inline float4 UnityStereoScreenSpaceUVAdjustInternal(float4 uv, float4 scaleAndOffset)
+{
+    return float4(UnityStereoScreenSpaceUVAdjustInternal(uv.xy, scaleAndOffset), UnityStereoScreenSpaceUVAdjustInternal(uv.zw, scaleAndOffset));
+}
+
+#define UnityStereoScreenSpaceUVAdjust(x, y) UnityStereoScreenSpaceUVAdjustInternal(x, y)
+
 #if defined(UNITY_SINGLE_PASS_STEREO)
 float2 TransformStereoScreenSpaceTex(float2 uv, float w)
 {
