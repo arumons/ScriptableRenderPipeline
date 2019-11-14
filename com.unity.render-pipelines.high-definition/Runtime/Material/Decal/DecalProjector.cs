@@ -30,8 +30,8 @@ namespace UnityEngine.Rendering.HighDefinition
                 OnValidate();
             }
         }
-        [SerializeField]
-        private int m_Layer = -1;
+       
+        private int m_Layer;
 
         [SerializeField]
         private float m_DrawDistance = 1000.0f;
@@ -226,7 +226,8 @@ namespace UnityEngine.Rendering.HighDefinition
             }
 
             Matrix4x4 sizeOffset = Matrix4x4.Translate(decalOffset) * Matrix4x4.Scale(decalSize);
-            m_Handle = DecalSystem.instance.AddDecal(position, rotation, Vector3.one, sizeOffset, m_DrawDistance, m_FadeScale, uvScaleBias, m_AffectsTransparency, m_Material, gameObject.layer, m_FadeFactor);
+            m_Layer = gameObject.layer;
+            m_Handle = DecalSystem.instance.AddDecal(position, rotation, Vector3.one, sizeOffset, m_DrawDistance, m_FadeScale, uvScaleBias, m_AffectsTransparency, m_Material, m_Layer, m_FadeFactor);
         }
 
         void OnDisable()
@@ -258,7 +259,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
                     if (m_Material != null)
                     {
-                        m_Handle = DecalSystem.instance.AddDecal(position, rotation, Vector3.one, sizeOffset, m_DrawDistance, m_FadeScale, uvScaleBias, m_AffectsTransparency, m_Material, gameObject.layer, m_FadeFactor);
+                        m_Handle = DecalSystem.instance.AddDecal(position, rotation, Vector3.one, sizeOffset, m_DrawDistance, m_FadeScale, uvScaleBias, m_AffectsTransparency, m_Material, m_Layer, m_FadeFactor);
 
                         if (!DecalSystem.IsHDRenderPipelineDecal(m_Material.shader)) // non HDRP/decal shaders such as shader graph decal do not affect transparency
                         {
@@ -276,7 +277,7 @@ namespace UnityEngine.Rendering.HighDefinition
                 }
                 else // no material change, just update whatever else changed
                 {
-                    DecalSystem.instance.UpdateCachedData(position, rotation, sizeOffset, m_DrawDistance, m_FadeScale, uvScaleBias, m_AffectsTransparency, m_Handle, gameObject.layer, m_FadeFactor);
+                    DecalSystem.instance.UpdateCachedData(position, rotation, sizeOffset, m_DrawDistance, m_FadeScale, uvScaleBias, m_AffectsTransparency, m_Handle, m_Layer, m_FadeFactor);
                 }
             }
         }
@@ -287,13 +288,13 @@ namespace UnityEngine.Rendering.HighDefinition
             if(m_Layer != gameObject.layer)
             {
                 Matrix4x4 sizeOffset = Matrix4x4.Translate(decalOffset) * Matrix4x4.Scale(decalSize);
-                DecalSystem.instance.UpdateCachedData(position, rotation, sizeOffset, m_DrawDistance, m_FadeScale, uvScaleBias, m_AffectsTransparency, m_Handle, gameObject.layer, m_FadeFactor);
                 m_Layer = gameObject.layer;
+                DecalSystem.instance.UpdateCachedData(position, rotation, sizeOffset, m_DrawDistance, m_FadeScale, uvScaleBias, m_AffectsTransparency, m_Handle, m_Layer, m_FadeFactor);
             }
         }
 #endif
 
-            void LateUpdate()
+        void LateUpdate()
         {
             if (m_Handle != null)
             {
